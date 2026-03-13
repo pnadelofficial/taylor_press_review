@@ -7,7 +7,7 @@ import math
 from utils import TFIDF
 import nltk
 
-nltk.download('punkt')
+nltk.download('punkt_tab')
 
 st.title("Press Review viewer")
 
