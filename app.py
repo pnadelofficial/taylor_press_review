@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import math
+from utils import TFIDF
 
 st.title("Press Review viewer")
 
@@ -46,19 +47,19 @@ if len(newspapers) > 0:
         for i, tab in enumerate(tabs):
             with tab:
                 newspaper = newspapers[i]
+                subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.year == selected_year.year)].reset_index(drop=True)
                 search_term = st.text_input("Search for a term")
                 if search_term.strip():
-                    print(search_term)
-                    print(articles.chunks)
-                    subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.year == selected_year.year) & (articles.chunks.str.match(search_term))]
-                    print(subset)
-                else:                
-                    subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.year == selected_year.year)]
+                    tfidf = TFIDF(subset['chunks'].tolist())
+                    results = tfidf.query(search_term)
+                    subset['similarity'] = 0
+                    for idx, score in results:
+                        subset.at[idx, 'similarity'] = score
+                    subset = subset.sort_values('similarity', ascending=False)
+                    subset = subset[subset['similarity'] > 0]
+
                 st.write(f"**Articles for {newspaper}**: {len(subset)}")
                 for i, row in subset.iterrows():
                     with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}"):
                         text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
                         st.write(f"{text}")
-
-# DO THESE THINGS FOR NEXT TIME
-# add search bar in the tab
