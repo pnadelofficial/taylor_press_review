@@ -48,7 +48,7 @@ if len(newspapers) > 0:
             with tab:
                 newspaper = newspapers[i]
                 subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.year == selected_year.year)].reset_index(drop=True)
-                search_term = st.text_input("Search for a term")
+                search_term = st.text_input("Search for a term", key=f"search_{newspaper}")
                 if search_term.strip():
                     tfidf = TFIDF(subset['chunks'].tolist())
                     results = tfidf.query(search_term)
