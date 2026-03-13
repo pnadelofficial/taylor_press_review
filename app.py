@@ -5,6 +5,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 import math
 from utils import TFIDF
+import nltk
+
+nltk.download('punkt')
 
 st.title("Press Review viewer")
 
