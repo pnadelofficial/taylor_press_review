@@ -19,8 +19,8 @@ def read_data():
     return articles.drop_duplicates(subset="Title")
 articles = read_data()
 
-# if "selected_newspapers" not in st.session_state:
-#     st.session_state.selected_newspapers = []
+if "selected_newspapers" not in st.session_state:
+    st.session_state.selected_newspapers = []
 
 # def select_broadsheets():
 #     st.session_state.selected_newspapers = list(
