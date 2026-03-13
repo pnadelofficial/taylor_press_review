@@ -9,7 +9,6 @@ st.title("Press Review viewer")
 
 @st.cache_resource
 def read_data():
-    # df = pd.read_csv("present_articles225.csv")
     df = pd.read_csv("./chunked_press_review.csv")
     df['Date'] = pd.to_datetime(df['Date'].apply(lambda x: x.replace(" 00:00:00", "")))
     articles = df.groupby(["Title", "Date", "Author", "Newspaper", "Source", "newspaper_type"])['chunks'].apply(lambda x: " ".join(x).replace("  ", " ")).reset_index()
@@ -22,29 +21,12 @@ articles = read_data()
 if "selected_newspapers" not in st.session_state:
     st.session_state.selected_newspapers = []
 
-# def select_broadsheets():
-#     st.session_state.selected_newspapers = list(
-#         articles[articles.newspaper_type == "broadsheet"].Newspaper.unique()
-#     )
-# def select_tabloids():
-#     st.session_state.selected_newspapers = list(
-#         articles[articles.newspaper_type == "tabloid"].Newspaper.unique()
-#     )
-# col1, col2 = st.columns([1, 1])
-# with col1:
-#     st.button("Select all broadsheets", on_click=select_broadsheets)
-# with col2:
-#     st.button("Select all tabloids", on_click=select_tabloids)
-
 newspapers = st.multiselect(
     "Pick by newspaper",
     articles.Newspaper.unique(),
     default=st.session_state.selected_newspapers,
-    key="newspaper_widget"  # different from "selected_newspapers"
+    key="newspaper_widget" 
 )
-# st.session_state.selected_newspapers = newspapers
-
-# print(st.session_state)
 
 if len(newspapers) > 0:
     data = []
@@ -64,7 +46,14 @@ if len(newspapers) > 0:
         for i, tab in enumerate(tabs):
             with tab:
                 newspaper = newspapers[i]
-                subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.year == selected_year.year)]
+                search_term = st.text_input("Search for a term")
+                if search_term.strip():
+                    print(search_term)
+                    print(articles.chunks)
+                    subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.year == selected_year.year) & (articles.chunks.str.match(search_term))]
+                    print(subset)
+                else:                
+                    subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.year == selected_year.year)]
                 st.write(f"**Articles for {newspaper}**: {len(subset)}")
                 for i, row in subset.iterrows():
                     with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}"):
