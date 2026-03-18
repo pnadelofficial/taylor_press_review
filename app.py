@@ -1,7 +1,5 @@
 import streamlit as st
-import json
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import math
 from utils import TFIDF
@@ -42,8 +40,8 @@ if len(newspapers) > 0:
     event = st.plotly_chart(fig, on_select="rerun", selection_mode="points")
 
     if len(event['selection']['points']) > 0:
-        print(event)
-        selected_year = math.floor(event['selection']['points'][0]["x"]) + 1
+        st.write(event)
+        selected_year = math.floor(event['selection']['points'][0]["x"])
         amount = event['selection']['points'][0]["y"]
         selected_year = pd.to_datetime(f"1/1/{selected_year}")
         st.write(f"**Year selected**: {selected_year.strftime('%Y')}")
