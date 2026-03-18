@@ -42,6 +42,7 @@ if len(newspapers) > 0:
     event = st.plotly_chart(fig, on_select="rerun", selection_mode="points")
 
     if len(event['selection']['points']) > 0:
+        print(event)
         selected_year = math.floor(event['selection']['points'][0]["x"]) + 1
         amount = event['selection']['points'][0]["y"]
         selected_year = pd.to_datetime(f"1/1/{selected_year}")
