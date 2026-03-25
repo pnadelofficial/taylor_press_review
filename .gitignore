@@ -207,3 +207,6 @@ marimo/_lsp/
 __marimo__/
 
 .vscode/
+
+chunked_press_review.csv
+extra_times_guadian_data.csv

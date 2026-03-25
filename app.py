@@ -11,12 +11,8 @@ st.title("Press Review viewer")
 
 @st.cache_resource
 def read_data():
-    df = pd.read_csv("./chunked_press_review.csv")
-    df['Date'] = pd.to_datetime(df['Date'].apply(lambda x: x.replace(" 00:00:00", "")))
-    articles = df.groupby(["Title", "Date", "Author", "Newspaper", "Source", "newspaper_type"])['chunks'].apply(lambda x: " ".join(x).replace("  ", " ")).reset_index()
-    articles = articles.sort_values(["Date"])
-    articles['time_frame'] = pd.to_datetime(articles['Date'])
-    articles['Title'] = articles["Title"].apply(lambda x: x.strip())
+    articles = pd.read_csv("./final_press_review.csv")
+    articles['time_frame'] = pd.to_datetime(articles['Date'], format='mixed')
     return articles.drop_duplicates(subset="Title")
 articles = read_data()
 
