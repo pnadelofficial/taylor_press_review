@@ -53,11 +53,11 @@ if len(newspapers) > 0:
                 if search_term.strip():
                     tfidf = TFIDF(subset['chunks'].tolist())
                     results = tfidf.query(search_term)
-                    subset['similarity'] = 0
+                    subset['similarity'] = 0.0
                     for idx, score in results:
                         subset.at[idx, 'similarity'] = score
                     subset = subset.sort_values('similarity', ascending=False)
-                    subset = subset[subset['similarity'] > 0]
+                    subset = subset[subset['similarity'] > 0.0]
 
                 st.write(f"**Articles for {newspaper}**: {len(subset)}")
                 for i, row in subset.iterrows():
