@@ -13,7 +13,7 @@ st.title("Press Review viewer")
 def read_data():
     articles = pd.read_csv("./final_press_review.csv")
     articles['time_frame'] = pd.to_datetime(articles['Date'], format='mixed')
-    return articles.drop_duplicates(subset="Title")
+    return articles# .drop_duplicates(subset="Title")
 articles = read_data()
 
 if "selected_newspapers" not in st.session_state:
