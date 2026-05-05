@@ -13,8 +13,11 @@ st.title("Press Review viewer")
 def read_data():
     articles = pd.read_csv("./final_press_review.csv")
     articles['time_frame'] = pd.to_datetime(articles['Date'], format='mixed')
-    mask = ~articles.duplicated(subset='Title') | articles['Title'].isna()
-    return articles[mask]
+    whitelist_titles = {'No Title found', "No title found"}
+    whitelisted_df = articles[articles['Title'].isin(whitelist_titles)]
+    normal_df = articles[~articles['Title'].isin(whitelist_titles)]
+    result = pd.concat([normal_df.drop_duplicates(subset='Title'), whitelisted_df]).sort_index()
+    return result
 articles = read_data()
 
 if "selected_newspapers" not in st.session_state:
