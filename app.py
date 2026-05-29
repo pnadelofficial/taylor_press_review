@@ -11,7 +11,8 @@ st.title("Press Review viewer")
 
 @st.cache_resource
 def read_data():
-    articles = pd.read_csv("./final_press_review.csv")
+    articles = pd.read_csv("./all_ratings0625.csv")
+    articles["rating"] = articles["rating"].astype(float)/5.0
     articles['time_frame'] = pd.to_datetime(articles['Date'], format='mixed')
     whitelist_titles = {'No Title found', "No title found"}
     whitelisted_df = articles[articles['Title'].isin(whitelist_titles)]
@@ -34,8 +35,13 @@ if len(newspapers) > 0:
     data = []
     for newspaper in newspapers:
         subset = articles[articles.Newspaper == newspaper]
-        subset_yearly = subset.groupby(subset['time_frame'].dt.to_period('Y')).size()
-        data.append(go.Bar(name=newspaper, x=subset_yearly.index.year, y=subset_yearly.values))
+        subset['Year'] = subset['time_frame'].dt.to_period('Y')
+        subset_yearly = subset.groupby("Year").agg(
+            weighted_count=('rating', 'sum'),
+            article_count=('rating', 'size')
+        )
+        subset_yearly['normalized'] = subset_yearly['weighted_count'] / subset_yearly['article_count']
+        data.append(go.Bar(name=newspaper, x=subset_yearly.index.year, y=subset_yearly['normalized'], customdata=subset_yearly['article_count'], hovertemplate='Year: %{x}<br>Normalized relevance: %{y:.3f}<br>Article count: %{customdata}<extra></extra>'))
     fig = go.Figure(data=data)
     event = st.plotly_chart(fig, on_select="rerun", selection_mode="points")
 
