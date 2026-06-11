@@ -24,6 +24,12 @@ articles = read_data()
 if "selected_newspapers" not in st.session_state:
     st.session_state.selected_newspapers = []
 
+if "expand_all" not in st.session_state:
+    st.session_state.expand_all = False
+
+def toggle_expand():
+    st.session_state.expand_all = not st.session_state.expand_all
+
 time_frame = st.selectbox(
     "Pick a time frame",
     ["By year", "By month"]
@@ -97,8 +103,12 @@ if len(newspapers) > 0:
                         subset = subset[subset['similarity'] > 0.0]
 
                     st.write(f"**Articles for {newspaper}**: {len(subset)}")
+                    st.button(
+                        "Collapse All" if st.session_state.expand_all else "Expand All",
+                        on_click=toggle_expand
+                    )
                     for i, row in subset.iterrows():
-                        with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}"):
+                        with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}", expanded=st.session_state.expand_all):
                             text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
                             st.write(f"{text}")
         else:
@@ -122,7 +132,11 @@ if len(newspapers) > 0:
                         subset = subset[subset['similarity'] > 0.0]
 
                     st.write(f"**Articles for {newspaper}**: {len(subset)}")
+                    st.button(
+                        "Collapse All" if st.session_state.expand_all else "Expand All",
+                        on_click=toggle_expand
+                    )
                     for i, row in subset.iterrows():
-                        with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}"):
+                        with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}", expanded=st.session_state.expand_all):
                             text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
                             st.write(f"{text}")
