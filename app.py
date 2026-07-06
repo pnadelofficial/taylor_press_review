@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import math
-from utils import TFIDF
+from utils import TFIDF, search_snippet
 import nltk
 
 nltk.download('punkt_tab')
@@ -93,6 +93,13 @@ if len(newspapers) > 0:
                     newspaper = newspapers[i]
                     subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.to_period('M') == selected_month.to_period('M'))].reset_index(drop=True)
                     search_term = st.text_input("Search for a term", key=f"search_{newspaper}")
+                    context_size = st.number_input(
+                        "Context size (sentences before and after the match)",
+                        min_value=0,
+                        value=1,
+                        step=1,
+                        key=f"context_{newspaper}",
+                    )
                     if search_term.strip():
                         tfidf = TFIDF(subset['chunks'].tolist())
                         results = tfidf.query(search_term)
@@ -109,8 +116,12 @@ if len(newspapers) > 0:
                     )
                     for i, row in subset.iterrows():
                         with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}", expanded=st.session_state.expand_all):
-                            text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
-                            st.write(f"{text}")
+                            if search_term.strip():
+                                snippet = search_snippet(row['chunks'], search_term, context_size)
+                                st.markdown(snippet, unsafe_allow_html=True)
+                            else:
+                                text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
+                                st.write(f"{text}")
         else:
             selected_year = math.ceil(event['selection']['points'][0]["x"])
             amount = event['selection']['points'][0]["y"]
@@ -122,6 +133,13 @@ if len(newspapers) > 0:
                     newspaper = newspapers[i]
                     subset = articles[(articles.Newspaper == newspaper) & (articles.time_frame.dt.year == selected_year.year)].reset_index(drop=True)
                     search_term = st.text_input("Search for a term", key=f"search_{newspaper}")
+                    context_size = st.number_input(
+                        "Context size (sentences before and after the match)",
+                        min_value=0,
+                        value=1,
+                        step=1,
+                        key=f"context_{newspaper}",
+                    )
                     if search_term.strip():
                         tfidf = TFIDF(subset['chunks'].tolist())
                         results = tfidf.query(search_term)
@@ -138,5 +156,9 @@ if len(newspapers) > 0:
                     )
                     for i, row in subset.iterrows():
                         with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}", expanded=st.session_state.expand_all):
-                            text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
-                            st.write(f"{text}")
+                            if search_term.strip():
+                                snippet = search_snippet(row['chunks'], search_term, context_size)
+                                st.markdown(snippet, unsafe_allow_html=True)
+                            else:
+                                text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
+                                st.write(f"{text}")
