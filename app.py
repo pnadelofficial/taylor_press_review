@@ -11,7 +11,7 @@ st.title("Press Review viewer")
 
 @st.cache_resource
 def read_data():
-    articles = pd.read_csv("./all_ratings0625.csv")
+    articles = pd.read_csv("./all_ratings0707.csv")
     articles["rating"] = articles["rating"].astype(float)/5.0
     articles['time_frame'] = pd.to_datetime(articles['Date'], format='mixed')
     whitelist_titles = {'No Title found', "No title found"}
