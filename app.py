@@ -118,10 +118,10 @@ if len(newspapers) > 0:
                         with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}", expanded=st.session_state.expand_all):
                             if search_term.strip():
                                 snippet = search_snippet(row['chunks'], search_term, context_size)
-                                st.markdown(snippet, unsafe_allow_html=True)
+                                st.markdown(snippet, unsafe_allow_html=True, key=f"snippet_{newspaper}_{i}")
                             else:
                                 text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
-                                st.write(f"{text}")
+                                st.write(f"{text}", key=f"text_{newspaper}_{i}")
         else:
             selected_year = math.ceil(event['selection']['points'][0]["x"])
             amount = event['selection']['points'][0]["y"]
@@ -158,7 +158,7 @@ if len(newspapers) > 0:
                         with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}", expanded=st.session_state.expand_all):
                             if search_term.strip():
                                 snippet = search_snippet(row['chunks'], search_term, context_size)
-                                st.markdown(snippet, unsafe_allow_html=True)
+                                st.markdown(snippet, unsafe_allow_html=True, key=f"snippet_{newspaper}_{i}")
                             else:
                                 text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
                                 st.write(f"{text}")
