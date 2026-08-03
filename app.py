@@ -12,8 +12,15 @@ st.title("Press Review viewer")
 @st.cache_resource
 def read_data():
     articles = pd.read_csv("./all_ratings731.csv")
-    articles["rating"] = articles["rating"].astype(float)/5.0
-    articles['time_frame'] = pd.to_datetime(articles['Date'], format='mixed')
+    def parse_date(val):
+        for fmt in ('%Y-%m-%d', '%B %d, %Y'):
+            try:
+                return pd.to_datetime(val, format=fmt)
+            except (ValueError, TypeError) as e:
+                continue
+        return pd.NaT  # fallback if nothing matches
+
+    articles['time_frame'] = articles['Date'].apply(lambda x: x.replace(" 00:00:00", "")).apply(parse_date)
     whitelist_titles = {'No Title found', "No title found"}
     whitelisted_df = articles[articles['Title'].isin(whitelist_titles)]
     normal_df = articles[~articles['Title'].isin(whitelist_titles)]
@@ -65,7 +72,7 @@ if len(newspapers) > 0:
                 weighted_count=('rating', 'sum'),
                 article_count=('rating', 'size')
             )
-            subset_yearly['normalized'] = subset_yearly['weighted_count'] # / subset_yearly['article_count'] not sure if I want this yet
+            subset_yearly['normalized'] = subset_yearly['weighted_count'] / subset_yearly['article_count'] # not sure if I want this yet
             data.append(go.Bar(name=newspaper, x=subset_yearly.index.year, y=subset_yearly['normalized'], customdata=subset_yearly['article_count'], hovertemplate='Year: %{x}<br>Normalized relevance: %{y:.3f}<br>Article count: %{customdata}<extra></extra>'))
         else:
             subset = subset[(subset.time_frame.dt.year == year)]
@@ -74,7 +81,7 @@ if len(newspapers) > 0:
                 weighted_count=('rating', 'sum'),
                 article_count=('rating', 'size')
             )
-            subset_monthly['normalized'] = subset_monthly['weighted_count']  # / subset_monthly['article_count']
+            subset_monthly['normalized'] = subset_monthly['weighted_count'] / subset_monthly['article_count']
             data.append(go.Bar(name=newspaper, x=subset_monthly.index.to_timestamp(), y=subset_monthly['normalized'], customdata=subset_monthly['article_count'], hovertemplate='Month: %{x|%B %Y}<br>Normalized relevance: %{y:.3f}<br>Article count: %{customdata}<extra></extra>'))
     if data[0]['x'].size == 0:
         st.warning("No data available for the selected newspapers and time frame. Please choose another configuration.")
