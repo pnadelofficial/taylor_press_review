@@ -72,7 +72,7 @@ if len(newspapers) > 0:
                 weighted_count=('rating', 'sum'),
                 article_count=('rating', 'size')
             )
-            subset_yearly['normalized'] = subset_yearly['weighted_count'] / subset_yearly['article_count'] # not sure if I want this yet
+            subset_yearly['normalized'] = (subset_yearly['weighted_count'] / subset_yearly['article_count'])*5 # not sure if I want this yet
             data.append(go.Bar(name=newspaper, x=subset_yearly.index.year, y=subset_yearly['normalized'], customdata=subset_yearly['article_count'], hovertemplate='Year: %{x}<br>Normalized relevance: %{y:.3f}<br>Article count: %{customdata}<extra></extra>'))
         else:
             subset = subset[(subset.time_frame.dt.year == year)]
@@ -81,7 +81,7 @@ if len(newspapers) > 0:
                 weighted_count=('rating', 'sum'),
                 article_count=('rating', 'size')
             )
-            subset_monthly['normalized'] = subset_monthly['weighted_count'] / subset_monthly['article_count']
+            subset_monthly['normalized'] = (subset_monthly['weighted_count'] / subset_monthly['article_count'])*5
             data.append(go.Bar(name=newspaper, x=subset_monthly.index.to_timestamp(), y=subset_monthly['normalized'], customdata=subset_monthly['article_count'], hovertemplate='Month: %{x|%B %Y}<br>Normalized relevance: %{y:.3f}<br>Article count: %{customdata}<extra></extra>'))
     if data[0]['x'].size == 0:
         st.warning("No data available for the selected newspapers and time frame. Please choose another configuration.")
