@@ -153,7 +153,8 @@ if len(newspapers) > 0:
                     st.write(f"**Articles for {newspaper}**: {len(subset)}")
                     st.button(
                         "Collapse All" if st.session_state.expand_all else "Expand All",
-                        on_click=toggle_expand
+                        on_click=toggle_expand,
+                        key=f"toggle_{newspaper}"
                     )
                     for i, row in subset.iterrows():
                         with st.expander(f"*{row['Title']}* by {row['Author']} - {row['time_frame'].strftime('%B %d, %Y')}", expanded=st.session_state.expand_all):
