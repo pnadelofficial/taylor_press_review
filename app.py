@@ -53,7 +53,7 @@ if time_frame == "By year":
 if time_frame == "By month":
     year = st.selectbox(
         "Pick a year",
-        articles['time_frame'].dt.year.sort_values().unique()
+        articles['time_frame'].dt.year.dropna().sort_values().unique()
     )
     newspapers = st.multiselect(
         "Pick by newspaper",
