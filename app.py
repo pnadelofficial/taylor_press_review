@@ -129,7 +129,7 @@ if len(newspapers) > 0:
                                 st.markdown(snippet, unsafe_allow_html=True, key=f"snippet_{newspaper}_{i}")
                             else:
                                 text = row['chunks'].replace("`", r"\`").replace("$", r"\$")
-                                st.write(f"{text}", key=f"text_{newspaper}_{i}")
+                                st.write(f"{text}")
         else:
             selected_year = math.ceil(event['selection']['points'][0]["x"])
             amount = event['selection']['points'][0]["y"]
