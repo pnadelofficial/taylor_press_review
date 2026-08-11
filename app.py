@@ -11,7 +11,7 @@ st.title("Press Review viewer")
 
 @st.cache_resource
 def read_data():
-    articles = pd.read_csv("./all_ratings731.csv")
+    articles = pd.read_csv("./all_ratings811.csv")
     def parse_date(val):
         for fmt in ('%Y-%m-%d', '%B %d, %Y'):
             try:
